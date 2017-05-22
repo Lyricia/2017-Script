@@ -1,0 +1,20 @@
+to do list:
+    raw data file set 제작
+
+    함수 :
+        노선검색 (raw Data에서 routeid 받아서 검색)
+        getRouteInfoItem busRouteId
+
+        노선이 지나는 정류장 리스트 getStaionByRoute busRouteId
+
+        정류장에 지나는 노선 리스트 getStationByUid arsId
+
+        정류장 검색 getStationByName stSrch
+
+        노선 번호 전체 갱신 및 raw데이터 저장
+
+
+    각 함수가 가질것 :
+        print info
+        Refresh
+        Save Data
