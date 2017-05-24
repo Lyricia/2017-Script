@@ -7,6 +7,9 @@ from xml.etree import ElementTree
 from xml.dom import pulldom
 from LoadRouteList import *
 from getRouteInfo import *
+from getStationbyRoute import *
+from getCurrentBusPosbyRoute import *
+
 
 key = '?serviceKey=TPp1KG1HsvfuMpXci0dkTYUCv7kljFQbDg%2FSySWRADJwGhzJ3dMBk%2FHDzyACWywjlGuiX3ycKh1NZ4ISvWExTg%3D%3D'
 serverurl = 'http://ws.bus.go.kr/api/rest/busRouteInfo/'
@@ -39,6 +42,11 @@ routelist = loadRouteListfromFile()
 testBusRouteID = routelist['광진01']
 #104900005
 
-getRouteInfo(testBusRouteID)
+RouteBaseInfo = getRouteInfo(testBusRouteID)
+RouteStationData = getStationInfoByRoute(testBusRouteID)
+CurrentBusPos = getCurrentBusPosByRoute(testBusRouteID)
 
-print(testBusRouteID)
+for data in CurrentBusPos:
+    print(RouteStationData[int(data.get('StationIndex'))].get('StationID'))
+    print (data.get('StationIndex'))
+    print (data)

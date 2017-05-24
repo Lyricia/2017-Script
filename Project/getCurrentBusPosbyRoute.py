@@ -2,11 +2,11 @@ import urllib.request
 import urllib.parse
 from xml.dom import pulldom
 
-def getRouteInfo(routeID):
+def getCurrentBusPosByRoute(routeID):
     key = '?serviceKey=TPp1KG1HsvfuMpXci0dkTYUCv7kljFQbDg%2FSySWRADJwGhzJ3dMBk%2FHDzyACWywjlGuiX3ycKh1NZ4ISvWExTg%3D%3D'
     serverurl = 'http://ws.bus.go.kr/api/rest/'
-    service = 'busRouteInfo'
-    methodname = 'getRouteInfo'
+    service = 'buspos'
+    methodname = 'getBusPosByRtid'
     url = serverurl + service +'/'+ methodname + key +'&busRouteId=' + routeID
 
     req = urllib.request.Request(url)
@@ -14,12 +14,16 @@ def getRouteInfo(routeID):
     response_body = urllib.request.urlopen(req).read().decode("utf-8")
 
     rawdata = pulldom.parseString(response_body)
-    data = dict()
+    datalist = list()
     for event, node in rawdata:
         if event == pulldom.START_ELEMENT and node.tagName == 'itemList':
+            data = dict()
             rawdata.expandNode(node)
-            data['CorpName'] = node.childNodes[2].childNodes[0].data
-            data['EndStation'] = node.childNodes[3].childNodes[0].data
-            data['StartStation'] = node.childNodes[11].childNodes[0].data
+            data['StationIndex'] = node.childNodes[15].childNodes[0].data
+            data['vehicleID'] = node.childNodes[18].childNodes[0].data
 
-    return data
+            datalist.append(data)
+
+
+    return datalist
+
