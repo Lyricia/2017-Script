@@ -14,7 +14,7 @@
 	노선에 있는 현재 버스 위치 buspos getBusPosByRtidList busRouteId
 
        
-	정류장에 지나는 노선 리스트 getStationByUid arsId
+	정류장에 지나는 노선 리스트 stationinfo getStationByUid arsId
 
         
 	정류장 검색 getStationByName stSrch

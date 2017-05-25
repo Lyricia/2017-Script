@@ -9,7 +9,7 @@ from LoadRouteList import *
 from getRouteInfo import *
 from getStationbyRoute import *
 from getCurrentBusPosbyRoute import *
-
+from getStationInfo import *
 
 key = '?serviceKey=TPp1KG1HsvfuMpXci0dkTYUCv7kljFQbDg%2FSySWRADJwGhzJ3dMBk%2FHDzyACWywjlGuiX3ycKh1NZ4ISvWExTg%3D%3D'
 serverurl = 'http://ws.bus.go.kr/api/rest/busRouteInfo/'
@@ -41,12 +41,27 @@ routelist = loadRouteListfromFile()
 
 testBusRouteID = routelist['광진01']
 #104900005
+#05533
 
 RouteBaseInfo = getRouteInfo(testBusRouteID)
 RouteStationData = getStationInfoByRoute(testBusRouteID)
-CurrentBusPos = getCurrentBusPosByRoute(testBusRouteID)
 
+print(RouteBaseInfo['EndStation'])
+Route1 = list()
+Route2 = list()
+for data in RouteStationData:
+    if (RouteBaseInfo.get('EndStation') == data.get('direction') and
+                data.get('direction') != data.get('StationName')):
+        Route1.append(data)
+    elif (data.get('direction') == data.get('StationName') or
+          RouteBaseInfo.get('EndStation') != data.get('direction')):
+        Route2.append(data)
+
+
+
+CurrentBusPos = getCurrentBusPosByRoute(testBusRouteID)
 for data in CurrentBusPos:
+    #arrivetime = getStationInfo(RouteStationData[int(data.get('StationIndex'))].get('StationID'))
+    print(data.get('StationIndex'))
     print(RouteStationData[int(data.get('StationIndex'))].get('StationID'))
-    print (data.get('StationIndex'))
-    print (data)
+
