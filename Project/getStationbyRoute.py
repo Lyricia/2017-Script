@@ -24,6 +24,7 @@ def getStationInfoByRoute(routeID):
             data['lasttime'] = node.childNodes[7].childNodes[0].data
             data['direction'] = node.childNodes[4].childNodes[0].data
             data['StationID'] = node.childNodes[16].childNodes[0].data
+            data['IsBusArrived'] = False
             datalist.append(data)
 
 
