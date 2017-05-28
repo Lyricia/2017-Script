@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import font
+from tkinter import messagebox
 
 from LoadRouteList import *
 from getRouteInfo import *
@@ -62,13 +63,18 @@ def InitSearchButton():
     SearchButton.place(x=330, y=110)
 
 def SearchButtonAction():
-    global SearchListBox, input
+    global SearchListBox, userInput, RouteBaseInfo, RouteStationData
 
-    input = InputLabel.get("1.0", END)
-    txtOutput.configure(state="normal")
-
-    txtOutput.insert(END, input)
-    txtOutput.configure(state="disabled")
+    print("search")
+    userInput = InputLabel.get("1.0", END)
+    userInput = userInput.replace('\n','')
+    if userInput in routelist:
+        RouteBaseInfo = getRouteInfo(routelist[userInput])
+        RouteStationData = getStationInfoByRoute(routelist[userInput])
+        InitData(routelist[userInput])
+        RenderInfo()
+    else:
+        messagebox.showerror('Error','Invalid Route Name')
 
 def key(event):
     if event.char == 't':
@@ -125,6 +131,29 @@ def InitData(RouteID):
 def BindPostionToRoute(Route1, Route2, pos):
     pass
 
+def RenderInfo():
+    txtOutput.delete('1.0', END)
+    txtOutput2.delete('1.0', END)
+    txtOutput.configure(state="normal")
+    txtOutput2.configure(state="normal")
+    for item in Route1:
+        if item['IsBusArrived']:
+            txtOutput.insert(END, '-> ')
+        else:
+            txtOutput.insert(END, '   ')
+        txtOutput.insert(END, item['StationName'])
+        txtOutput.insert(END, '\n')
+
+    for item in Route2:
+        if item['IsBusArrived']:
+            txtOutput2.insert(END, '-> ')
+        else:
+            txtOutput2.insert(END, '   ')
+        txtOutput2.insert(END, item['StationName'])
+        txtOutput2.insert(END, '\n')
+    txtOutput.configure(state="disabled")
+    txtOutput2.configure(state="disabled")
+
 g_Tk.bind("<Key>", key)
 
 InitTopText()
@@ -139,31 +168,10 @@ testBusRouteID = routelist['507']
 RouteBaseInfo = getRouteInfo(testBusRouteID)
 RouteStationData = getStationInfoByRoute(testBusRouteID)
 
-
-Route1 = list()
-Route2 = list()
-Route1Counter = 0
-Route2Counter = 0
-
 InitData(testBusRouteID)
 
-for item in Route1:
-    if item['IsBusArrived']:
-        txtOutput.insert(END, '-> ')
-    else:
-        txtOutput.insert(END, '   ')
-    txtOutput.insert(END, item['StationName'])
-    txtOutput.insert(END, '\n')
+RenderInfo()
 
-for item in Route2:
-    if item['IsBusArrived']:
-        txtOutput2.insert(END, '-> ')
-    else:
-        txtOutput2.insert(END, '   ')
-    txtOutput2.insert(END, item['StationName'])
-    txtOutput2.insert(END, '\n')
 
-txtOutput.configure(state="disabled")
-txtOutput2.configure(state="disabled")
 g_Tk.mainloop()
 
