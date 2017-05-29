@@ -55,10 +55,14 @@ def InitInputLabel():
     InputLabel = Text(g_Tk, wrap=NONE, font = TempFont, height=1, width=25, borderwidth=1)
     InputLabel.pack()
     InputLabel.place(x=30, y=105)
+    InputLabel.bind('<Return>', disableEnter)
+
+def disableEnter(event):
+    return 'break'
 
 def InitSearchButton():
     TempFont = font.Font(g_Tk, size=12, weight='bold', family='Consolas')
-    SearchButton = Button(g_Tk, font=TempFont, text="검색", command=SearchButtonAction)
+    SearchButton = Button(g_Tk, font=TempFont, text="Search", command=SearchButtonAction)
     SearchButton.pack()
     SearchButton.place(x=330, y=110)
 
