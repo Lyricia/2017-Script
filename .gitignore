@@ -9,3 +9,4 @@ Project/.idea/Project.iml
 *.xml
 Project/__pycache__/getRouteInfo.cpython-36.pyc
 Project/__pycache__/getCurrentBusPosbyRoute.cpython-36.pyc
+Project/.idea/workspace.xml

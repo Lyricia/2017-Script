@@ -36,7 +36,9 @@ def xmlfunc(xmlfile):
 
 #loadRouteListfromAPI()
 
-routelist = loadRouteListfromFile()
+#routelist = loadRouteListfromFile()
+routelist = loadRouteListfromAPI()
+print(routelist)
 
 
 testBusRouteID = routelist['광진01']

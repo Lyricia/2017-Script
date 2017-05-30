@@ -60,15 +60,16 @@ def InitRenderText():
     txtFrame3.place(x=0, y=0)
     RouteSearchBox.configure(state="disabled")
 
-def InitInputLabel():
+def InitSearchBox():
     global InputLabel
     TempFont = font.Font(g_Tk, size=15, weight='bold', family='Consolas')
     InputLabel = Text(g_Tk, wrap=NONE, font = TempFont, height=1, width=25, borderwidth=1)
     InputLabel.pack()
     InputLabel.place(x=30, y=105)
-    InputLabel.bind('<Return>', disableEnter)
+    InputLabel.bind('<Return>', eventEnter)
 
-def disableEnter(event):
+def eventEnter(event):
+    SearchButtonAction()
     return 'break'
 
 def InitSearchButton():
@@ -76,6 +77,23 @@ def InitSearchButton():
     SearchButton = Button(g_Tk, font=TempFont, text="Search", command=SearchButtonAction)
     SearchButton.pack()
     SearchButton.place(x=330, y=110)
+
+def callback(event, tag):
+    global RouteBaseInfo, RouteStationData, InputLabel
+
+    index = event.widget.index("@%s,%s" % (event.x, event.y))
+    tmp = index[0:index.find('.')]
+    tag = 'tag' + str(int(tmp)-1)
+    selectRoute = event.widget.get('%s.first' % tag, '%s.last' % tag)
+    InputLabel.delete('1.0', END)
+    InputLabel.insert(END, selectRoute)
+    Tab.select(frame2)
+    RouteBaseInfo = getRouteInfo(routelist[selectRoute])
+    RouteStationData = getStationInfoByRoute(routelist[selectRoute])
+    InitData(routelist[selectRoute])
+    RenderInfo()
+
+    print(selectRoute)
 
 def SearchButtonAction():
     global SearchListBox, userInput, RouteBaseInfo, RouteStationData
@@ -89,6 +107,7 @@ def SearchButtonAction():
         RouteStationData = getStationInfoByRoute(routelist[userInput])
         InitData(routelist[userInput])
         RenderInfo()
+
     else:
         Tab.select(frame1)
         dataexist = 0
@@ -98,14 +117,14 @@ def SearchButtonAction():
         for data in routelist:
             if userInput in data:
                 tag = "tag" + str(datacounter)
-                button = "<Button-" + str(datacounter + 1)+ ">"
                 RouteSearchBox.tag_config(tag, foreground="blue")
-                RouteSearchBox.tag_bind(tag, button, lambda e: callback(e, tag))
+                RouteSearchBox.tag_bind(tag, '<Button-1>', lambda e: callback(e, tag))
                 RouteSearchBox.insert(END, data, tag)
                 RouteSearchBox.insert(END, '\n')
                 dataexist = 1
                 datacounter+=1
         RouteSearchBox.configure(state="disabled")
+
         if not dataexist:
             messagebox.showerror('Error','Invalid Route Name')
 
@@ -198,17 +217,14 @@ def InitTab():
 
     Tab.add(frame1, text="노선검색")
     Tab.add(frame2, text="노선정보")
-    Tab.add(frame3, text="Vegetable")
-
-def callback(event, tag):
-    print(event.widget.get('%s.first' % tag, '%s.last' % tag))
+    Tab.add(frame3, text="   ")
 
 
 
 InitTab()
 InitTopText()
 InitRenderText()
-InitInputLabel()
+InitSearchBox()
 InitSearchButton()
 routelist = loadRouteListfromFile()
 

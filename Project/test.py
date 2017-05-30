@@ -1,26 +1,32 @@
+import tkinter as tk
 from tkinter import *
 
+def callback(event):
+    # get the index of the mouse click
+    index = event.widget.index("@%s,%s" % (event.x, event.y))
 
-def callback(event, tag):
-    print(event.widget.get('%s.first'%tag, '%s.last'%tag))
+    # get the indices of all "adj" tags
+    tag_indices = list(event.widget.tag_ranges('tag'))
 
-root = Tk()
+    # iterate them pairwise (start and end index)
+    for start, end in zip(tag_indices[0::2], tag_indices[1::2]):
+        # check if the tag matches the mouse click index
+        if event.widget.compare(start, '<=', index) and event.widget.compare(index, '<', end):
+            # return string between tag start and end
+            print(start, end, event.widget.get(start, end))
 
-text = Text(root)
+root = tk.Tk()
+
+text = tk.Text(root)
 text.pack()
 
-text.tag_config("tag1", foreground="blue")
-text.tag_bind("tag1", "<Button-1>", lambda e:callback(e, "tag1"))
-text.insert(END, "first link", "tag1")
+text.tag_config("tag", foreground="blue")
+text.tag_bind("tag", "<Button-1>", callback)
+
+text.insert(END, "first link", "tag")
 
 text.insert(END, " other text ")
 
-text.tag_config("tag2", foreground="blue")
-text.tag_bind("tag2", "<Button-1>", lambda e:callback(e, "tag2"))
-text.insert(END, "second link ", "tag2")
-
-text.tag_config("tag3", foreground="blue")
-text.tag_bind("tag3", "<Button-1>", lambda e:callback(e, "tag3"))
-text.insert(END, "second123 link", "tag3")
+text.insert(END, "second link", "tag")
 
 root.mainloop()
