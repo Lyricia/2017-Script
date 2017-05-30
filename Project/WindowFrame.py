@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import font
 from tkinter import messagebox
+from tkinter import ttk
 
 from LoadRouteList import *
 from getRouteInfo import *
@@ -17,13 +18,14 @@ def InitTopText():
     MainText = Label(g_Tk, font = TempFont, text="[Seoul Bus]")
     MainText.pack()
     MainText.place(x=20)
-
+    g_Tk.bind("<Key>", key)
 
 def InitRenderText():
-    global txtOutput, txtOutput2
+    global txtOutput, txtOutput2, RouteSearchBox
     TempFont = font.Font(g_Tk, size=12, weight='bold', family='Consolas')
+
     #text box frame 1
-    txtFrame = Frame(g_Tk, borderwidth=1, relief="sunken")
+    txtFrame = Frame(frame2, borderwidth=1, relief="sunken")
     txtOutput = Text(txtFrame, font = TempFont, wrap=NONE, height=28, width=27, borderwidth=0)
     vscroll = Scrollbar(txtFrame, orient=VERTICAL, command=txtOutput.yview)
     txtOutput['yscroll'] = vscroll.set
@@ -31,11 +33,11 @@ def InitRenderText():
     vscroll.pack(side="right", fill="y")
     txtOutput.pack(side="left", fill="both", expand=True)
 
-    txtFrame.place(x=30, y=200)
+    txtFrame.place(x=0, y=0)
     txtOutput.configure(state="disabled")
 
     #text box frame 2
-    txtFrame2 = Frame(g_Tk, borderwidth=1, relief="sunken")
+    txtFrame2 = Frame(frame2, borderwidth=1, relief="sunken")
     txtOutput2 = Text(txtFrame2, font = TempFont, wrap=NONE, height=28, width=27, borderwidth=0)
     vscroll2 = Scrollbar(txtFrame2, orient=VERTICAL, command=txtOutput2.yview)
     txtOutput2['yscroll'] = vscroll2.set
@@ -43,11 +45,20 @@ def InitRenderText():
     vscroll2.pack(side="right", fill="y")
     txtOutput2.pack(side="left", fill="both", expand=True)
 
-    txtFrame2.place(x=330, y=200)
+    txtFrame2.place(x=300, y=0)
     txtOutput2.configure(state="disabled")
 
     #Search Box
+    txtFrame3 = Frame(frame1, borderwidth=1, relief="sunken")
+    RouteSearchBox = Text(txtFrame3, font=TempFont, wrap=NONE, height=28, width=27, borderwidth=0)
+    vscroll3 = Scrollbar(txtFrame3, orient=VERTICAL, command=RouteSearchBox.yview)
+    RouteSearchBox['yscroll'] = vscroll3.set
 
+    vscroll3.pack(side="right", fill="y")
+    RouteSearchBox.pack(side="left", fill="both", expand=True)
+
+    txtFrame3.place(x=0, y=0)
+    RouteSearchBox.configure(state="disabled")
 
 def InitInputLabel():
     global InputLabel
@@ -73,12 +84,30 @@ def SearchButtonAction():
     userInput = InputLabel.get("1.0", END)
     userInput = userInput.replace('\n','')
     if userInput in routelist:
+        Tab.select(frame2)
         RouteBaseInfo = getRouteInfo(routelist[userInput])
         RouteStationData = getStationInfoByRoute(routelist[userInput])
         InitData(routelist[userInput])
         RenderInfo()
     else:
-        messagebox.showerror('Error','Invalid Route Name')
+        Tab.select(frame1)
+        dataexist = 0
+        datacounter = 0
+        RouteSearchBox.configure(state = 'normal')
+        RouteSearchBox.delete('1.0', END)
+        for data in routelist:
+            if userInput in data:
+                tag = "tag" + str(datacounter)
+                button = "<Button-" + str(datacounter + 1)+ ">"
+                RouteSearchBox.tag_config(tag, foreground="blue")
+                RouteSearchBox.tag_bind(tag, button, lambda e: callback(e, tag))
+                RouteSearchBox.insert(END, data, tag)
+                RouteSearchBox.insert(END, '\n')
+                dataexist = 1
+                datacounter+=1
+        RouteSearchBox.configure(state="disabled")
+        if not dataexist:
+            messagebox.showerror('Error','Invalid Route Name')
 
 def key(event):
     if event.char == 't':
@@ -131,7 +160,6 @@ def InitData(RouteID):
             BusIndex = BusIndex - Route1.__len__()
             Route2[BusIndex]['IsBusArrived'] = True
 
-
 def BindPostionToRoute(Route1, Route2, pos):
     pass
 
@@ -158,23 +186,31 @@ def RenderInfo():
     txtOutput.configure(state="disabled")
     txtOutput2.configure(state="disabled")
 
-g_Tk.bind("<Key>", key)
+def InitTab():
+    global Tab, frame1, frame2, frame3
+    Tab = ttk.Notebook()
+    Tab.pack()
+    Tab.place(x=25, y=175)
 
+    frame1 = ttk.Frame(Tab, width=600, height=550, relief=SOLID)
+    frame2 = ttk.Frame(Tab, width=600, height=550, relief=SOLID)
+    frame3 = ttk.Frame(Tab, width=600, height=550, relief=SOLID)
+
+    Tab.add(frame1, text="노선검색")
+    Tab.add(frame2, text="노선정보")
+    Tab.add(frame3, text="Vegetable")
+
+def callback(event, tag):
+    print(event.widget.get('%s.first' % tag, '%s.last' % tag))
+
+
+
+InitTab()
 InitTopText()
 InitRenderText()
 InitInputLabel()
 InitSearchButton()
-
-
 routelist = loadRouteListfromFile()
-testBusRouteID = routelist['507']
-
-RouteBaseInfo = getRouteInfo(testBusRouteID)
-RouteStationData = getStationInfoByRoute(testBusRouteID)
-
-InitData(testBusRouteID)
-
-RenderInfo()
 
 
 g_Tk.mainloop()
