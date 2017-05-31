@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import *
+from tkinter import messagebox
 
 def callback(event):
     # get the index of the mouse click
@@ -19,6 +20,7 @@ root = tk.Tk()
 
 text = tk.Text(root)
 text.pack()
+messagebox.showinfo('test', 'First Bus : {0}\nSecond Bus : {1}'.format('asd', 'qwe'))
 
 text.tag_config("tag", foreground="blue")
 text.tag_bind("tag", "<Button-1>", callback)

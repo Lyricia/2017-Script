@@ -8,6 +8,7 @@ from getRouteInfo import *
 from getStationbyRoute import *
 from getCurrentBusPosbyRoute import *
 from getStationInfo import *
+from getStationbyRoute import *
 
 
 g_Tk = Tk()
@@ -78,20 +79,39 @@ def InitSearchButton():
     SearchButton.pack()
     SearchButton.place(x=330, y=110)
 
-def callback(event, tag):
+def callback(event, tag, cat):
     global RouteBaseInfo, RouteStationData, InputLabel
 
     index = event.widget.index("@%s,%s" % (event.x, event.y))
-    tmp = index[0:index.find('.')]
-    tag = 'tag' + str(int(tmp)-1)
-    selectRoute = event.widget.get('%s.first' % tag, '%s.last' % tag)
-    InputLabel.delete('1.0', END)
-    InputLabel.insert(END, selectRoute)
-    Tab.select(frame2)
-    RouteBaseInfo = getRouteInfo(routelist[selectRoute])
-    RouteStationData = getStationInfoByRoute(routelist[selectRoute])
-    InitData(routelist[selectRoute])
-    RenderInfo()
+    idx = int(index[0:index.find('.')]) - 1
+
+    if cat == 'route':
+        tag = 'tag_route' + str(idx)
+        selectRoute = event.widget.get('%s.first' % tag, '%s.last' % tag)
+        InputLabel.delete('1.0', END)
+        InputLabel.insert(END, selectRoute)
+        Tab.select(frame2)
+        RouteBaseInfo = getRouteInfo(routelist[selectRoute])
+        RouteStationData = getStationInfoByRoute(routelist[selectRoute])
+        InitData(routelist[selectRoute])
+        RenderInfo()
+    elif cat == 'stationA' or cat == 'stationB':
+        if cat == 'stationB':
+            idx = idx + len(Route1)
+            tag = 'tag_station' + str(idx)
+        else:
+
+            tag = 'tag_station' + str(idx)
+        selectRoute = event.widget.get('%s.first' % tag, '%s.last' % tag)
+        arrivaldata = getStationInfo(RouteStationData[idx].get('StationID'))
+        for data in arrivaldata:
+            pass
+
+
+        messagebox.showinfo(selectRoute, 'First Bus : {0}\nSecond Bus : {1}'.
+                            format(arrivaldata['arrivetime1'],arrivaldata['arrivetime2']))
+        print('')
+
 
     print(selectRoute)
 
@@ -116,9 +136,12 @@ def SearchButtonAction():
         RouteSearchBox.delete('1.0', END)
         for data in routelist:
             if userInput in data:
-                tag = "tag" + str(datacounter)
-                RouteSearchBox.tag_config(tag, foreground="blue")
-                RouteSearchBox.tag_bind(tag, '<Button-1>', lambda e: callback(e, tag))
+                tag = "tag_route" + str(datacounter)
+                if datacounter%2 == 0:
+                    RouteSearchBox.tag_config(tag, foreground="blue")
+                else:
+                    RouteSearchBox.tag_config(tag, foreground="green")
+                RouteSearchBox.tag_bind(tag, '<Button-1>', lambda e: callback(e, tag, 'route'))
                 RouteSearchBox.insert(END, data, tag)
                 RouteSearchBox.insert(END, '\n')
                 dataexist = 1
@@ -145,7 +168,7 @@ def key(event):
         quit()
 
 def InitData(RouteID):
-    global Route1, Route2
+    global Route1, Route2, CurrentBusPos
 
     RouteBaseInfo = getRouteInfo(RouteID)
     RouteStationData = getStationInfoByRoute(RouteID)
@@ -183,25 +206,35 @@ def BindPostionToRoute(Route1, Route2, pos):
     pass
 
 def RenderInfo():
+    datacount = 0
     txtOutput.delete('1.0', END)
     txtOutput2.delete('1.0', END)
     txtOutput.configure(state="normal")
     txtOutput2.configure(state="normal")
     for item in Route1:
+        tag = "tag_station" + str(datacount)
+        txtOutput.tag_config(tag, foreground = 'blue')
+        txtOutput.tag_bind(tag, '<Button-1>', lambda e: callback(e, tag, 'stationA'))
         if item['IsBusArrived']:
             txtOutput.insert(END, '-> ')
         else:
             txtOutput.insert(END, '   ')
-        txtOutput.insert(END, item['StationName'])
+        txtOutput.insert(END, item['StationName'], tag)
         txtOutput.insert(END, '\n')
+        datacount += 1
 
     for item in Route2:
+        tag = "tag_station" + str(datacount)
+        txtOutput2.tag_config(tag, foreground='blue')
+        txtOutput2.tag_bind(tag, '<Button-1>', lambda e: callback(e, tag, 'stationB'))
         if item['IsBusArrived']:
             txtOutput2.insert(END, '-> ')
         else:
             txtOutput2.insert(END, '   ')
-        txtOutput2.insert(END, item['StationName'])
+        txtOutput2.insert(END, item['StationName'], tag)
         txtOutput2.insert(END, '\n')
+        datacount += 1
+
     txtOutput.configure(state="disabled")
     txtOutput2.configure(state="disabled")
 

@@ -10,6 +10,7 @@ from getRouteInfo import *
 from getStationbyRoute import *
 from getCurrentBusPosbyRoute import *
 from getStationInfo import *
+from getStationbyRoute import *
 
 key = '?serviceKey=TPp1KG1HsvfuMpXci0dkTYUCv7kljFQbDg%2FSySWRADJwGhzJ3dMBk%2FHDzyACWywjlGuiX3ycKh1NZ4ISvWExTg%3D%3D'
 serverurl = 'http://ws.bus.go.kr/api/rest/busRouteInfo/'
@@ -36,8 +37,8 @@ def xmlfunc(xmlfile):
 
 #loadRouteListfromAPI()
 
-#routelist = loadRouteListfromFile()
-routelist = loadRouteListfromAPI()
+routelist = loadRouteListfromFile()
+#routelist = loadRouteListfromAPI()
 print(routelist)
 
 
@@ -59,11 +60,15 @@ for data in RouteStationData:
           RouteBaseInfo.get('EndStation') != data.get('direction')):
         Route2.append(data)
 
+routeinfo = getStationInfoByRoute(testBusRouteID)
 
+datalist = getStationInfo('05158')
 
-CurrentBusPos = getCurrentBusPosByRoute(testBusRouteID)
-for data in CurrentBusPos:
-    #arrivetime = getStationInfo(RouteStationData[int(data.get('StationIndex'))].get('StationID'))
-    print(data.get('StationIndex'))
-    print(RouteStationData[int(data.get('StationIndex'))].get('StationID'))
+print('')
+
+#CurrentBusPos = getCurrentBusPosByRoute(testBusRouteID)
+#for data in CurrentBusPos:
+#    #arrivetime = getStationInfo(RouteStationData[int(data.get('StationIndex'))].get('StationID'))
+#    print(data.get('StationIndex'))
+#    print(RouteStationData[int(data.get('StationIndex'))].get('StationID'))
 

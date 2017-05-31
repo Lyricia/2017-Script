@@ -14,12 +14,14 @@ def getStationInfo(stationID):
     response_body = urllib.request.urlopen(req).read().decode("utf-8")
 
     data = dict()
+    datalist = list()
     rawdata = pulldom.parseString(response_body)
     for event, node in rawdata:
         if event == pulldom.START_ELEMENT and node.tagName == 'itemList':
             rawdata.expandNode(node)
             data['arrivetime1'] = node.childNodes[3].childNodes[0].data
             data['arrivetime2'] = node.childNodes[4].childNodes[0].data
+            data['RouteID'] = node.childNodes[6].childNodes[0].data
+            datalist.append(dict(data))
 
-
-    return data
+    return datalist
