@@ -25,6 +25,13 @@ l.append(d2)
 
 
 
+print ('\n'.join(str(p) for p in l))
+print(l)
+s = str()
+for d in l:
+    for d2 in d:
+        s+=d[d2]
+        s+='\n'
 
-
-messagebox.showinfo('a', 'a' )
+print(s)
+messagebox.showinfo('a', s )

@@ -1,3 +1,5 @@
+import webbrowser
+
 from tkinter import *
 from tkinter import font
 from tkinter import messagebox
@@ -27,7 +29,7 @@ def InitRenderText():
 
     #text box frame 1
     txtFrame = Frame(frame2, borderwidth=1, relief="sunken")
-    txtOutput = Text(txtFrame, font = TempFont, wrap=NONE, height=28, width=27, borderwidth=0)
+    txtOutput = Text(txtFrame, font = TempFont, wrap=NONE, height=28, width=31, borderwidth=0)
     vscroll = Scrollbar(txtFrame, orient=VERTICAL, command=txtOutput.yview)
     txtOutput['yscroll'] = vscroll.set
 
@@ -39,7 +41,7 @@ def InitRenderText():
 
     #text box frame 2
     txtFrame2 = Frame(frame2, borderwidth=1, relief="sunken")
-    txtOutput2 = Text(txtFrame2, font = TempFont, wrap=NONE, height=28, width=27, borderwidth=0)
+    txtOutput2 = Text(txtFrame2, font = TempFont, wrap=NONE, height=28, width=31, borderwidth=0)
     vscroll2 = Scrollbar(txtFrame2, orient=VERTICAL, command=txtOutput2.yview)
     txtOutput2['yscroll'] = vscroll2.set
 
@@ -73,11 +75,25 @@ def eventEnter(event):
     SearchButtonAction()
     return 'break'
 
-def InitSearchButton():
+def InitButton():
     TempFont = font.Font(g_Tk, size=12, weight='bold', family='Consolas')
     SearchButton = Button(g_Tk, font=TempFont, text="Search", command=SearchButtonAction)
     SearchButton.pack()
-    SearchButton.place(x=330, y=110)
+    SearchButton.place(x=330, y=100)
+
+    openbrowserbutton = Button(g_Tk, font=TempFont, text="ROUTE MAP", command=BrowserBtnAction)
+    openbrowserbutton.pack()
+    openbrowserbutton.place(x=420, y=100)
+
+def BrowserBtnAction():
+    tmp = InputLabel.get("1.0", END).replace('\n','')
+    try:
+        if routelist[tmp] : pass
+        tmpurl = 'http://bus.go.kr/realBusLine6.jsp?strbusid={0}&wbustp=N'.format(routelist[tmp])
+        webbrowser.open(tmpurl)
+
+    except:
+        messagebox.showerror("Error", "Invalid Input")
 
 def callback(event, tag, cat):
     global RouteBaseInfo, RouteStationData, InputLabel
@@ -87,13 +103,13 @@ def callback(event, tag, cat):
 
     if cat == 'route':
         tag = 'tag_route' + str(idx)
-        selectRoute = event.widget.get('%s.first' % tag, '%s.last' % tag)
+        userInput = event.widget.get('%s.first' % tag, '%s.last' % tag)
         InputLabel.delete('1.0', END)
-        InputLabel.insert(END, selectRoute)
+        InputLabel.insert(INSERT, userInput)
         Tab.select(frame2)
-        RouteBaseInfo = getRouteInfo(routelist[selectRoute])
-        RouteStationData = getStationInfoByRoute(routelist[selectRoute])
-        InitData(routelist[selectRoute])
+        RouteBaseInfo = getRouteInfo(routelist[userInput])
+        RouteStationData = getStationInfoByRoute(routelist[userInput])
+        InitData(routelist[userInput])
         RenderInfo()
     elif cat == 'stationA' or cat == 'stationB':
         if cat == 'stationB':
@@ -102,18 +118,16 @@ def callback(event, tag, cat):
         else:
             tag = 'tag_station' + str(idx)
 
-        selectRoute = event.widget.get('%s.first' % tag, '%s.last' % tag)
+
         arrivaldata = getStationInfo(RouteStationData[idx].get('StationID'))
-        for data in arrivaldata:
-            pass
 
+        tmp = str()
+        for dataset in arrivaldata:
+            tmp += routelist_inv[dataset['RouteID']] + '\n'
+            tmp += dataset['arrivetime1'] + '\n'
+            tmp += dataset['arrivetime2'] + '\n' + '\n'
 
-        messagebox.showinfo(selectRoute, 'First Bus : {0}\nSecond Bus : {1}'.
-                            format(arrivaldata['arrivetime1'],arrivaldata['arrivetime2']))
-        print('')
-
-
-    print(selectRoute)
+        messagebox.showinfo('test', tmp)
 
 def SearchButtonAction():
     global SearchListBox, userInput, RouteBaseInfo, RouteStationData
@@ -121,14 +135,14 @@ def SearchButtonAction():
     print("search")
     userInput = InputLabel.get("1.0", END)
     userInput = userInput.replace('\n','')
-    if userInput in routelist:
-        Tab.select(frame2)
+    try:
+#        if routelist[userInput] : pass
         RouteBaseInfo = getRouteInfo(routelist[userInput])
         RouteStationData = getStationInfoByRoute(routelist[userInput])
         InitData(routelist[userInput])
+        Tab.select(frame2)
         RenderInfo()
-
-    else:
+    except:
         Tab.select(frame1)
         dataexist = 0
         datacounter = 0
@@ -145,26 +159,14 @@ def SearchButtonAction():
                 RouteSearchBox.insert(END, data, tag)
                 RouteSearchBox.insert(END, '\n')
                 dataexist = 1
-                datacounter+=1
+                datacounter += 1
         RouteSearchBox.configure(state="disabled")
 
         if not dataexist:
             messagebox.showerror('Error','Invalid Route Name')
 
 def key(event):
-    if event.char == 't':
-        txtOutput.configure(state="normal")
-
-        txtOutput.insert(END, input)
-        txtOutput.configure(state="disabled")
-
-    elif event.char == 'y':
-        txtOutput2.configure(state="normal")
-
-        txtOutput2.insert(END, "abab\n")
-        txtOutput2.configure(state="disabled")
-
-    elif event.char == 'q':
+    if event.char == 'q':
         quit()
 
 def InitData(RouteID):
@@ -244,9 +246,9 @@ def InitTab():
     Tab.pack()
     Tab.place(x=25, y=175)
 
-    frame1 = ttk.Frame(Tab, width=600, height=550, relief=SOLID)
-    frame2 = ttk.Frame(Tab, width=600, height=550, relief=SOLID)
-    frame3 = ttk.Frame(Tab, width=600, height=550, relief=SOLID)
+    frame1 = ttk.Frame(Tab, width=600, height=540, relief=SOLID)
+    frame2 = ttk.Frame(Tab, width=600, height=540, relief=SOLID)
+    frame3 = ttk.Frame(Tab, width=600, height=540, relief=SOLID)
 
     Tab.add(frame1, text="노선검색")
     Tab.add(frame2, text="노선정보")
@@ -258,9 +260,10 @@ InitTab()
 InitTopText()
 InitRenderText()
 InitSearchBox()
-InitSearchButton()
-routelist = loadRouteListfromFile()
+InitButton()
 
+routelist = loadRouteListfromFile()
+routelist_inv = {v: k for k, v in routelist.items()}
 
 g_Tk.mainloop()
 
