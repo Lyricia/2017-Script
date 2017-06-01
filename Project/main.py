@@ -45,6 +45,7 @@ print(routelist)
 testBusRouteID = routelist['광진01']
 #104900005
 #05533
+#05158
 
 RouteBaseInfo = getRouteInfo(testBusRouteID)
 RouteStationData = getStationInfoByRoute(testBusRouteID)

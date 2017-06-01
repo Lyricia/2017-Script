@@ -100,8 +100,8 @@ def callback(event, tag, cat):
             idx = idx + len(Route1)
             tag = 'tag_station' + str(idx)
         else:
-
             tag = 'tag_station' + str(idx)
+
         selectRoute = event.widget.get('%s.first' % tag, '%s.last' % tag)
         arrivaldata = getStationInfo(RouteStationData[idx].get('StationID'))
         for data in arrivaldata:

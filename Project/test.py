@@ -1,34 +1,30 @@
-import tkinter as tk
-from tkinter import *
+from getStationInfo import *
+
 from tkinter import messagebox
 
-def callback(event):
-    # get the index of the mouse click
-    index = event.widget.index("@%s,%s" % (event.x, event.y))
+#dictlist = getStationInfo('05158')
 
-    # get the indices of all "adj" tags
-    tag_indices = list(event.widget.tag_ranges('tag'))
+d = dict()
+d1 = dict()
+d2 = dict()
+l = list()
 
-    # iterate them pairwise (start and end index)
-    for start, end in zip(tag_indices[0::2], tag_indices[1::2]):
-        # check if the tag matches the mouse click index
-        if event.widget.compare(start, '<=', index) and event.widget.compare(index, '<', end):
-            # return string between tag start and end
-            print(start, end, event.widget.get(start, end))
+d['a'] = 'aa'
+d['b'] = 'bb'
+d['c'] = 'cc'
+d1['a'] = 'aa1'
+d1['b'] = 'bb1'
+d1['c'] = 'cc1'
+d2['a'] = 'aa2'
+d2['b'] = 'bb2'
+d2['c'] = 'cc2'
+l.append(d)
+l.append(d1)
+l.append(d2)
 
-root = tk.Tk()
 
-text = tk.Text(root)
-text.pack()
-messagebox.showinfo('test', 'First Bus : {0}\nSecond Bus : {1}'.format('asd', 'qwe'))
 
-text.tag_config("tag", foreground="blue")
-text.tag_bind("tag", "<Button-1>", callback)
 
-text.insert(END, "first link", "tag")
 
-text.insert(END, " other text ")
 
-text.insert(END, "second link", "tag")
-
-root.mainloop()
+messagebox.showinfo('a', 'a' )
