@@ -16,12 +16,24 @@ from getStationbyRoute import *
 g_Tk = Tk()
 g_Tk.geometry("700x800+750+200")
 
+def MainInit():
+    global routelist, routelist_inv
+    InitTab()
+    InitTopText()
+    InitRenderText()
+    InitSearchBox()
+    InitButton()
+
+    routelist = loadRouteListfromFile()
+    routelist_inv = {v: k for k, v in routelist.items()}
+
+    g_Tk.bind("<Key>", key)
+
 def InitTopText():
     TempFont = font.Font(g_Tk, size=15, weight='bold', family = 'Consolas')
     MainText = Label(g_Tk, font = TempFont, text="[Seoul Bus]")
     MainText.pack()
     MainText.place(x=20)
-    g_Tk.bind("<Key>", key)
 
 def InitRenderText():
     global txtOutput, txtOutput2, RouteSearchBox
@@ -79,11 +91,23 @@ def InitButton():
     TempFont = font.Font(g_Tk, size=12, weight='bold', family='Consolas')
     SearchButton = Button(g_Tk, font=TempFont, text="Search", command=SearchButtonAction)
     SearchButton.pack()
-    SearchButton.place(x=330, y=100)
+    SearchButton.config(width=8, height=2)
+    SearchButton.place(x=330, y=80)
 
     openbrowserbutton = Button(g_Tk, font=TempFont, text="ROUTE MAP", command=BrowserBtnAction)
     openbrowserbutton.pack()
-    openbrowserbutton.place(x=420, y=100)
+    openbrowserbutton.config(width=10, height=2)
+    openbrowserbutton.place(x=425, y=80)
+
+    RefreshBtn = Button(g_Tk, font=TempFont, text="Refresh", command=RefreshBtnAction)
+    RefreshBtn.pack()
+    RefreshBtn.config(width = 10, height = 2)
+    RefreshBtn.place(x=540, y=80)
+
+def RefreshBtnAction():
+    if Tab.index(Tab.select()) == 1 :
+        SearchButtonAction()
+    messagebox.showinfo("refresh", "Refresh")
 
 def BrowserBtnAction():
     tmp = InputLabel.get("1.0", END).replace('\n','')
@@ -204,9 +228,6 @@ def InitData(RouteID):
             BusIndex = BusIndex - Route1.__len__()
             Route2[BusIndex]['IsBusArrived'] = True
 
-def BindPostionToRoute(Route1, Route2, pos):
-    pass
-
 def RenderInfo():
     datacount = 0
     txtOutput.delete('1.0', END)
@@ -256,14 +277,7 @@ def InitTab():
 
 
 
-InitTab()
-InitTopText()
-InitRenderText()
-InitSearchBox()
-InitButton()
-
-routelist = loadRouteListfromFile()
-routelist_inv = {v: k for k, v in routelist.items()}
+MainInit()
 
 g_Tk.mainloop()
 
