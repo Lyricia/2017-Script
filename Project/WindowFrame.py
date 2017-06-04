@@ -15,6 +15,8 @@ from getStationbyRoute import *
 
 g_Tk = Tk()
 g_Tk.geometry("700x800+750+200")
+bookmarklist = list()
+
 
 def MainInit():
     global routelist, routelist_inv
@@ -83,6 +85,20 @@ def InitSearchBox():
     InputLabel.place(x=30, y=105)
     InputLabel.bind('<Return>', eventEnter)
 
+def InitTab():
+    global Tab, frame1, frame2, frame3
+    Tab = ttk.Notebook()
+    Tab.pack()
+    Tab.place(x=25, y=175)
+
+    frame1 = ttk.Frame(Tab, width=600, height=540, relief=SOLID)
+    frame2 = ttk.Frame(Tab, width=600, height=540, relief=SOLID)
+    frame3 = ttk.Frame(Tab, width=600, height=540, relief=SOLID)
+
+    Tab.add(frame1, text="노선검색")
+    Tab.add(frame2, text="노선정보")
+    Tab.add(frame3, text="   ")
+
 def eventEnter(event):
     SearchButtonAction()
     return 'break'
@@ -104,6 +120,11 @@ def InitButton():
     RefreshBtn.config(width = 10, height = 2)
     RefreshBtn.place(x=540, y=80)
 
+    AddBookMarkBtn = Button(g_Tk, font=TempFont, text="Add\nBookMark", command=AddBookMarkBtnAction)
+    AddBookMarkBtn.pack()
+    AddBookMarkBtn.config(width = 10, height = 2)
+    AddBookMarkBtn.place(x=540, y=20)
+
 def RefreshBtnAction():
     if Tab.index(Tab.select()) == 1 :
         SearchButtonAction()
@@ -118,6 +139,16 @@ def BrowserBtnAction():
 
     except:
         messagebox.showerror("Error", "Invalid Input")
+
+def AddBookMarkBtnAction():
+    tmp = InputLabel.get("1.0", END).replace('\n', '')
+    try:
+        routelist[tmp]
+        bookmarklist.append(tmp)
+        print(bookmarklist)
+    except:
+        print('invalid')
+    pass
 
 def callback(event, tag, cat):
     global RouteBaseInfo, RouteStationData, InputLabel
@@ -261,23 +292,10 @@ def RenderInfo():
     txtOutput.configure(state="disabled")
     txtOutput2.configure(state="disabled")
 
-def InitTab():
-    global Tab, frame1, frame2, frame3
-    Tab = ttk.Notebook()
-    Tab.pack()
-    Tab.place(x=25, y=175)
 
-    frame1 = ttk.Frame(Tab, width=600, height=540, relief=SOLID)
-    frame2 = ttk.Frame(Tab, width=600, height=540, relief=SOLID)
-    frame3 = ttk.Frame(Tab, width=600, height=540, relief=SOLID)
-
-    Tab.add(frame1, text="노선검색")
-    Tab.add(frame2, text="노선정보")
-    Tab.add(frame3, text="   ")
 
 
 
 MainInit()
 
 g_Tk.mainloop()
-
