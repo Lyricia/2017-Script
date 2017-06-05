@@ -38,7 +38,7 @@ def InitTopText():
     MainText.place(x=20)
 
 def InitRenderText():
-    global txtOutput, txtOutput2, RouteSearchBox
+    global txtOutput, txtOutput2, RouteSearchBox, BookmarkBox
     TempFont = font.Font(g_Tk, size=12, weight='bold', family='Consolas')
 
     #text box frame 1
@@ -77,6 +77,18 @@ def InitRenderText():
     txtFrame3.place(x=0, y=0)
     RouteSearchBox.configure(state="disabled")
 
+    #Bookmark Frame box
+    txtFrame4 = Frame(frame3, borderwidth=1, relief="sunken")
+    BookmarkBox = Text(txtFrame4, font=TempFont, wrap=NONE, height=28, width=27, borderwidth=0)
+    vscroll4 = Scrollbar(txtFrame4, orient=VERTICAL, command=BookmarkBox.yview)
+    BookmarkBox['yscroll'] = vscroll4.set
+
+    vscroll4.pack(side="right", fill="y")
+    BookmarkBox.pack(side="left", fill="both", expand=True)
+
+    txtFrame4.place(x=0, y=0)
+    BookmarkBox.configure(state="disabled")
+
 def InitSearchBox():
     global InputLabel
     TempFont = font.Font(g_Tk, size=15, weight='bold', family='Consolas')
@@ -97,7 +109,7 @@ def InitTab():
 
     Tab.add(frame1, text="노선검색")
     Tab.add(frame2, text="노선정보")
-    Tab.add(frame3, text="   ")
+    Tab.add(frame3, text="BOOKMARK")
 
 def eventEnter(event):
     SearchButtonAction()
@@ -146,43 +158,13 @@ def AddBookMarkBtnAction():
         routelist[tmp]
         bookmarklist.append(tmp)
         print(bookmarklist)
+        BookmarkBox.configure(state = 'normal')
+        BookmarkBox.insert(END, tmp)
+        BookmarkBox.configure(state = 'disabled')
+
     except:
         print('invalid')
     pass
-
-def callback(event, tag, cat):
-    global RouteBaseInfo, RouteStationData, InputLabel
-
-    index = event.widget.index("@%s,%s" % (event.x, event.y))
-    idx = int(index[0:index.find('.')]) - 1
-
-    if cat == 'route':
-        tag = 'tag_route' + str(idx)
-        userInput = event.widget.get('%s.first' % tag, '%s.last' % tag)
-        InputLabel.delete('1.0', END)
-        InputLabel.insert(INSERT, userInput)
-        Tab.select(frame2)
-        RouteBaseInfo = getRouteInfo(routelist[userInput])
-        RouteStationData = getStationInfoByRoute(routelist[userInput])
-        InitData(routelist[userInput])
-        RenderInfo()
-    elif cat == 'stationA' or cat == 'stationB':
-        if cat == 'stationB':
-            idx = idx + len(Route1)
-            tag = 'tag_station' + str(idx)
-        else:
-            tag = 'tag_station' + str(idx)
-
-
-        arrivaldata = getStationInfo(RouteStationData[idx].get('StationID'))
-
-        tmp = str()
-        for dataset in arrivaldata:
-            tmp += routelist_inv[dataset['RouteID']] + '\n'
-            tmp += dataset['arrivetime1'] + '\n'
-            tmp += dataset['arrivetime2'] + '\n' + '\n'
-
-        messagebox.showinfo('test', tmp)
 
 def SearchButtonAction():
     global SearchListBox, userInput, RouteBaseInfo, RouteStationData
@@ -219,6 +201,40 @@ def SearchButtonAction():
 
         if not dataexist:
             messagebox.showerror('Error','Invalid Route Name')
+
+def callback(event, tag, cat):
+    global RouteBaseInfo, RouteStationData, InputLabel
+
+    index = event.widget.index("@%s,%s" % (event.x, event.y))
+    idx = int(index[0:index.find('.')]) - 1
+
+    if cat == 'route':
+        tag = 'tag_route' + str(idx)
+        userInput = event.widget.get('%s.first' % tag, '%s.last' % tag)
+        InputLabel.delete('1.0', END)
+        InputLabel.insert(INSERT, userInput)
+        Tab.select(frame2)
+        RouteBaseInfo = getRouteInfo(routelist[userInput])
+        RouteStationData = getStationInfoByRoute(routelist[userInput])
+        InitData(routelist[userInput])
+        RenderInfo()
+    elif cat == 'stationA' or cat == 'stationB':
+        if cat == 'stationB':
+            idx = idx + len(Route1)
+            tag = 'tag_station' + str(idx)
+        else:
+            tag = 'tag_station' + str(idx)
+
+
+        arrivaldata = getStationInfo(RouteStationData[idx].get('StationID'))
+
+        tmp = str()
+        for dataset in arrivaldata:
+            tmp += routelist_inv[dataset['RouteID']] + '\n'
+            tmp += dataset['arrivetime1'] + '\n'
+            tmp += dataset['arrivetime2'] + '\n' + '\n'
+
+        messagebox.showinfo('test', tmp)
 
 def key(event):
     if event.char == 'q':
