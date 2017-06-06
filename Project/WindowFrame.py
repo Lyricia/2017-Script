@@ -155,7 +155,7 @@ def BrowserBtnAction():
 def AddBookMarkBtnAction():
     tmp = InputLabel.get("1.0", END).replace('\n', '')
     try:
-        routelist[tmp]
+        if(routelist[tmp]): pass
         bookmarklist.append(tmp)
         print(bookmarklist)
         BookmarkBox.configure(state = 'normal')
