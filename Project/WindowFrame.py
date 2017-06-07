@@ -107,9 +107,9 @@ def InitTab():
     frame2 = ttk.Frame(Tab, width=600, height=540, relief=SOLID)
     frame3 = ttk.Frame(Tab, width=600, height=540, relief=SOLID)
 
-    Tab.add(frame1, text="노선검색")
-    Tab.add(frame2, text="노선정보")
-    Tab.add(frame3, text="BOOKMARK")
+    Tab.add(frame1, text=" 노선검색 ")
+    Tab.add(frame2, text=" 노선정보 ")
+    Tab.add(frame3, text=" BOOKMARK ")
 
 def eventEnter(event):
     SearchButtonAction()
@@ -120,22 +120,22 @@ def InitButton():
     SearchButton = Button(g_Tk, font=TempFont, text="Search", command=SearchButtonAction)
     SearchButton.pack()
     SearchButton.config(width=8, height=2)
-    SearchButton.place(x=330, y=80)
+    SearchButton.place(x=330, y=95)
 
     openbrowserbutton = Button(g_Tk, font=TempFont, text="ROUTE MAP", command=BrowserBtnAction)
     openbrowserbutton.pack()
     openbrowserbutton.config(width=10, height=2)
-    openbrowserbutton.place(x=425, y=80)
+    openbrowserbutton.place(x=425, y=95)
 
     RefreshBtn = Button(g_Tk, font=TempFont, text="Refresh", command=RefreshBtnAction)
     RefreshBtn.pack()
     RefreshBtn.config(width = 10, height = 2)
-    RefreshBtn.place(x=540, y=80)
+    RefreshBtn.place(x=540, y=95)
 
     AddBookMarkBtn = Button(g_Tk, font=TempFont, text="Add\nBookMark", command=AddBookMarkBtnAction)
     AddBookMarkBtn.pack()
     AddBookMarkBtn.config(width = 10, height = 2)
-    AddBookMarkBtn.place(x=540, y=20)
+    AddBookMarkBtn.place(x=540, y=35)
 
 def RefreshBtnAction():
     if Tab.index(Tab.select()) == 1 :
@@ -155,11 +155,17 @@ def BrowserBtnAction():
 def AddBookMarkBtnAction():
     tmp = InputLabel.get("1.0", END).replace('\n', '')
     try:
-        if(routelist[tmp]): pass
+        if(routelist[tmp]):pass
+        if tmp in bookmarklist:
+            return
         bookmarklist.append(tmp)
+        tag = "tag_bmk" + str(bookmarklist.__len__())
         print(bookmarklist)
         BookmarkBox.configure(state = 'normal')
-        BookmarkBox.insert(END, tmp)
+        BookmarkBox.tag_config(tag, foreground="blue")
+        BookmarkBox.tag_bind(tag, '<Button-1>', lambda e: callback(e, tag, 'bmk'))
+        BookmarkBox.insert(END, tmp, tag)
+        BookmarkBox.insert(END, '\n')
         BookmarkBox.configure(state = 'disabled')
 
     except:
@@ -225,7 +231,6 @@ def callback(event, tag, cat):
         else:
             tag = 'tag_station' + str(idx)
 
-
         arrivaldata = getStationInfo(RouteStationData[idx].get('StationID'))
 
         tmp = str()
@@ -235,6 +240,17 @@ def callback(event, tag, cat):
             tmp += dataset['arrivetime2'] + '\n' + '\n'
 
         messagebox.showinfo('test', tmp)
+
+    elif cat == 'bmk':
+        userInput = bookmarklist[idx]
+        InputLabel.delete('1.0', END)
+        InputLabel.insert(INSERT, userInput)
+        Tab.select(frame2)
+        RouteBaseInfo = getRouteInfo(routelist[userInput])
+        RouteStationData = getStationInfoByRoute(routelist[userInput])
+        InitData(routelist[userInput])
+        RenderInfo()
+        pass
 
 def key(event):
     if event.char == 'q':
