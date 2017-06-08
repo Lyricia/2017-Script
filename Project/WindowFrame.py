@@ -12,11 +12,9 @@ from getCurrentBusPosbyRoute import *
 from getStationInfo import *
 from getStationbyRoute import *
 
-
 g_Tk = Tk()
 g_Tk.geometry("700x800+750+200")
 bookmarklist = list()
-
 
 def MainInit():
     global routelist, routelist_inv
@@ -323,10 +321,6 @@ def RenderInfo():
 
     txtOutput.configure(state="disabled")
     txtOutput2.configure(state="disabled")
-
-
-
-
 
 MainInit()
 
