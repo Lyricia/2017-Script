@@ -104,7 +104,6 @@ def InitTab():
     frame1 = ttk.Frame(Tab, width=600, height=540, relief=SOLID)
     frame2 = ttk.Frame(Tab, width=600, height=540, relief=SOLID)
     frame3 = ttk.Frame(Tab, width=600, height=540, relief=SOLID)
-
     Tab.add(frame1, text=" 노선검색 ")
     Tab.add(frame2, text=" 노선정보 ")
     Tab.add(frame3, text=" BOOKMARK ")
