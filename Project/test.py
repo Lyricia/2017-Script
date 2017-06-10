@@ -1,5 +1,7 @@
 from tkinter import *
 
+g_Tk = Tk()
+g_Tk.geometry("700x800+750+200")
 def function():
     selection = var.get()
 
@@ -15,13 +17,16 @@ def function():
 
         #No choice
 
-    master.quit()
-
-master = Tk()
 var = IntVar()
-Label(master, text = "Select OCR language").grid(row=0, sticky=W)
-Radiobutton(master, text = "default", variable = var, value = 1).grid(row=1, sticky=W)
-Radiobutton(master, text = "user-defined", variable = var, value = 2).grid(row=2, sticky=W)
-Button(master, text = "OK", command = function).grid(row=3, sticky=W)
+r1 = Radiobutton(g_Tk, text = "default", variable = var, value = 1)
+r2 = Radiobutton(g_Tk, text = "user-defined", variable = var, value = 2)
+
+r1.place(x=20)
+r2.place(x=70)
+
+
+SearchButton = Button(g_Tk, text="Search", command=function)
+SearchButton.pack()
+
 
 mainloop()

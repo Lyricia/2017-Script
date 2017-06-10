@@ -22,12 +22,22 @@ def MainInit():
     InitTopText()
     InitRenderText()
     InitSearchBox()
+    InitRadioBtn()
     InitButton()
 
     routelist = loadRouteListfromFile()
     routelist_inv = {v: k for k, v in routelist.items()}
 
     g_Tk.bind("<Key>", key)
+
+def InitRadioBtn():
+    global r_Route, r_Station, radiovar
+    radiovar = IntVar()
+    radiovar.set(1)
+    r_Route = Radiobutton(g_Tk, text="Route", variable = radiovar,  value=1)
+    r_Station = Radiobutton(g_Tk, text="Station", variable = radiovar, value=2)
+    r_Route.place(x=30, y= 125)
+    r_Station.place(x=100, y= 125)
 
 def InitTopText():
     TempFont = font.Font(g_Tk, size=15, weight='bold', family = 'Consolas')
@@ -171,39 +181,46 @@ def AddBookMarkBtnAction():
 
 def SearchButtonAction():
     global SearchListBox, userInput, RouteBaseInfo, RouteStationData
-
+    radiobtnsel = radiovar.get()
     print("search")
     userInput = InputLabel.get("1.0", END)
     userInput = userInput.replace('\n','')
-    try:
-#        if routelist[userInput] : pass
-        RouteBaseInfo = getRouteInfo(routelist[userInput])
-        RouteStationData = getStationInfoByRoute(routelist[userInput])
-        InitData(routelist[userInput])
-        Tab.select(frame2)
-        RenderInfo()
-    except:
-        Tab.select(frame1)
-        dataexist = 0
-        datacounter = 0
-        RouteSearchBox.configure(state = 'normal')
-        RouteSearchBox.delete('1.0', END)
-        for data in routelist:
-            if userInput in data:
-                tag = "tag_route" + str(datacounter)
-                if datacounter%2 == 0:
-                    RouteSearchBox.tag_config(tag, foreground="blue")
-                else:
-                    RouteSearchBox.tag_config(tag, foreground="green")
-                RouteSearchBox.tag_bind(tag, '<Button-1>', lambda e: callback(e, tag, 'route'))
-                RouteSearchBox.insert(END, data, tag)
-                RouteSearchBox.insert(END, '\n')
-                dataexist = 1
-                datacounter += 1
-        RouteSearchBox.configure(state="disabled")
+    if radiobtnsel == 1:
+        try:
+#            if routelist[userInput] : pass
+            RouteBaseInfo = getRouteInfo(routelist[userInput])
+            RouteStationData = getStationInfoByRoute(routelist[userInput])
+            InitData(routelist[userInput])
+            Tab.select(frame2)
+            RenderInfo()
+        except:
+            Tab.select(frame1)
+            dataexist = 0
+            datacounter = 0
+            RouteSearchBox.configure(state = 'normal')
+            RouteSearchBox.delete('1.0', END)
+            for data in routelist:
+                if userInput in data:
+                    tag = "tag_route" + str(datacounter)
+                    if datacounter%2 == 0:
+                        RouteSearchBox.tag_config(tag, foreground="blue")
+                    else:
+                        RouteSearchBox.tag_config(tag, foreground="green")
+                    RouteSearchBox.tag_bind(tag, '<Button-1>', lambda e: callback(e, tag, 'route'))
+                    RouteSearchBox.insert(END, data, tag)
+                    RouteSearchBox.insert(END, '\n')
+                    dataexist = 1
+                    datacounter += 1
+            RouteSearchBox.configure(state="disabled")
 
-        if not dataexist:
-            messagebox.showerror('Error','Invalid Route Name')
+            if not dataexist:
+                messagebox.showerror('Error','Invalid Route Name')
+
+    elif radiobtnsel == 2:
+        print("sel station")
+
+    else:
+        print("N")
 
 def callback(event, tag, cat):
     global RouteBaseInfo, RouteStationData, InputLabel
