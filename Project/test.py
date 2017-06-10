@@ -1,37 +1,27 @@
-from getStationInfo import *
+from tkinter import *
 
-from tkinter import messagebox
+def function():
+    selection = var.get()
 
-#dictlist = getStationInfo('05158')
+    if  selection == 1:
+        print("1")
 
-d = dict()
-d1 = dict()
-d2 = dict()
-l = list()
+    elif selection == 2:
+        print("2")
+        # User-defined
 
-d['a'] = 'aa'
-d['b'] = 'bb'
-d['c'] = 'cc'
-d1['a'] = 'aa1'
-d1['b'] = 'bb1'
-d1['c'] = 'cc1'
-d2['a'] = 'aa2'
-d2['b'] = 'bb2'
-d2['c'] = 'cc2'
-l.append(d)
-l.append(d1)
-l.append(d2)
+    else:#selection==0
+        print("no")
 
+        #No choice
 
+    master.quit()
 
+master = Tk()
+var = IntVar()
+Label(master, text = "Select OCR language").grid(row=0, sticky=W)
+Radiobutton(master, text = "default", variable = var, value = 1).grid(row=1, sticky=W)
+Radiobutton(master, text = "user-defined", variable = var, value = 2).grid(row=2, sticky=W)
+Button(master, text = "OK", command = function).grid(row=3, sticky=W)
 
-print ('\n'.join(str(p) for p in l))
-print(l)
-s = str()
-for d in l:
-    for d2 in d:
-        s+=d[d2]
-        s+='\n'
-
-print(s)
-messagebox.showinfo('a', s )
+mainloop()
