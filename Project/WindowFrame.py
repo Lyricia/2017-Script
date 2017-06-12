@@ -36,8 +36,8 @@ def InitRadioBtn():
     radiovar.set(1)
     r_Route = Radiobutton(g_Tk, text="Route", variable = radiovar,  value=1)
     r_Station = Radiobutton(g_Tk, text="Station", variable = radiovar, value=2)
-    r_Route.place(x=30, y= 125)
-    r_Station.place(x=100, y= 125)
+    r_Route.place(x=30, y= 130)
+    r_Station.place(x=100, y= 130)
 
 def InitTopText():
     TempFont = font.Font(g_Tk, size=15, weight='bold', family = 'Consolas')
@@ -102,7 +102,7 @@ def InitSearchBox():
     TempFont = font.Font(g_Tk, size=15, weight='bold', family='Consolas')
     InputLabel = Text(g_Tk, wrap=NONE, font = TempFont, height=1, width=25, borderwidth=1)
     InputLabel.pack()
-    InputLabel.place(x=30, y=105)
+    InputLabel.place(x=30, y=100)
     InputLabel.bind('<Return>', eventEnter)
 
 def InitTab():
