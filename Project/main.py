@@ -12,6 +12,7 @@ from getStationbyRoute import *
 from getCurrentBusPosbyRoute import *
 from getStationInfo import *
 from getStationbyRoute import *
+from getStationID import *
 import webbrowser
 
 key = '?serviceKey=TPp1KG1HsvfuMpXci0dkTYUCv7kljFQbDg%2FSySWRADJwGhzJ3dMBk%2FHDzyACWywjlGuiX3ycKh1NZ4ISvWExTg%3D%3D'
@@ -56,6 +57,10 @@ testBusRouteID = routelist['광진01']
 #    #arrivetime = getStationInfo(RouteStationData[int(data.get('StationIndex'))].get('StationID'))
 #    print(data.get('StationIndex'))
 #    print(RouteStationData[int(data.get('StationIndex'))].get('StationID'))
+
+list = getStationID('테크')
+getStationInfo(list[23]['StID'])
+
 
 routetmp = '104900005'
 tmpurl = 'http://bus.go.kr/realBusLine6.jsp?strbusid={0}&wbustp=N'.format(routetmp)
