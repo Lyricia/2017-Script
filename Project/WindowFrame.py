@@ -11,6 +11,7 @@ from getStationbyRoute import *
 from getCurrentBusPosbyRoute import *
 from getStationInfo import *
 from getStationbyRoute import *
+from getStationID import *
 
 g_Tk = Tk()
 g_Tk.geometry("700x800+750+200")
@@ -114,7 +115,7 @@ def InitTab():
     frame1 = ttk.Frame(Tab, width=600, height=540, relief=SOLID)
     frame2 = ttk.Frame(Tab, width=600, height=540, relief=SOLID)
     frame3 = ttk.Frame(Tab, width=600, height=540, relief=SOLID)
-    Tab.add(frame1, text=" 노선검색 ")
+    Tab.add(frame1, text="   검색   ")
     Tab.add(frame2, text=" 노선정보 ")
     Tab.add(frame3, text=" BOOKMARK ")
 
@@ -180,7 +181,7 @@ def AddBookMarkBtnAction():
     pass
 
 def SearchButtonAction():
-    global SearchListBox, userInput, RouteBaseInfo, RouteStationData
+    global SearchListBox, userInput, RouteBaseInfo, RouteStationData, StList
     radiobtnsel = radiovar.get()
     print("search")
     userInput = InputLabel.get("1.0", END)
@@ -217,7 +218,21 @@ def SearchButtonAction():
                 messagebox.showerror('Error','Invalid Route Name')
 
     elif radiobtnsel == 2:
-        print("sel station")
+        datacounter = 0
+        StList = getStationID(userInput)
+        RouteSearchBox.configure(state='normal')
+        RouteSearchBox.delete('1.0', END)
+        for data in StList:
+            tag = "tag_StSearch" + str(datacounter)
+            if datacounter % 2 == 0:
+                RouteSearchBox.tag_config(tag, foreground="blue")
+            else:
+                RouteSearchBox.tag_config(tag, foreground="green")
+            RouteSearchBox.tag_bind(tag, '<Button-1>', lambda e: callback(e, tag, 'StSearch'))
+            RouteSearchBox.insert(END, data['StName'], tag)
+            RouteSearchBox.insert(END, '\n')
+            datacounter += 1
+        RouteSearchBox.configure(state="disabled")
 
     else:
         print("N")
@@ -238,6 +253,7 @@ def callback(event, tag, cat):
         RouteStationData = getStationInfoByRoute(routelist[userInput])
         InitData(routelist[userInput])
         RenderInfo()
+
     elif cat == 'stationA' or cat == 'stationB':
         if cat == 'stationB':
             idx = idx + len(Route1)
@@ -265,6 +281,20 @@ def callback(event, tag, cat):
         InitData(routelist[userInput])
         RenderInfo()
         pass
+
+    elif cat == 'StSearch':
+        arrivaldata = getStationInfo(StList[idx]['StID'])
+        tmp = str()
+        for dataset in arrivaldata:
+            tmp += routelist_inv[dataset['RouteID']] + '\n'
+            tmp += dataset['arrivetime1'] + '\n'
+            tmp += dataset['arrivetime2'] + '\n' + '\n'
+
+        messagebox.showinfo('test', tmp)
+
+        print('stsearch')
+
+
 
 def key(event):
     if event.char == 'q':

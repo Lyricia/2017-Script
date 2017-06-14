@@ -59,7 +59,7 @@ testBusRouteID = routelist['광진01']
 #    print(RouteStationData[int(data.get('StationIndex'))].get('StationID'))
 
 list = getStationID('테크')
-getStationInfo(list[23]['StID'])
+print(getStationInfo(list[23]['StID']))
 
 
 routetmp = '104900005'
