@@ -14,6 +14,7 @@ from getStationInfo import *
 from getStationbyRoute import *
 from getStationID import *
 import webbrowser
+from EmailSender import *
 
 key = '?serviceKey=TPp1KG1HsvfuMpXci0dkTYUCv7kljFQbDg%2FSySWRADJwGhzJ3dMBk%2FHDzyACWywjlGuiX3ycKh1NZ4ISvWExTg%3D%3D'
 serverurl = 'http://ws.bus.go.kr/api/rest/busRouteInfo/'
@@ -32,8 +33,8 @@ testBusRouteID = routelist['광진01']
 #05533
 #05158
 
-#RouteBaseInfo = getRouteInfo(testBusRouteID)
-#RouteStationData = getStationInfoByRoute(testBusRouteID)
+RouteBaseInfo = getRouteInfo(testBusRouteID)
+RouteStationData = getStationInfoByRoute(testBusRouteID)
 #
 #print(RouteBaseInfo['EndStation'])
 #Route1 = list()
@@ -61,8 +62,9 @@ testBusRouteID = routelist['광진01']
 list = getStationID('테크')
 print(getStationInfo(list[23]['StID']))
 
+#SendEmail(list, 'ST')
 
 routetmp = '104900005'
 tmpurl = 'http://bus.go.kr/realBusLine6.jsp?strbusid={0}&wbustp=N'.format(routetmp)
 
-webbrowser.open(tmpurl)
+#webbrowser.open(tmpurl)
