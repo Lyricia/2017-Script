@@ -12,6 +12,7 @@ from getCurrentBusPosbyRoute import *
 from getStationInfo import *
 from getStationbyRoute import *
 from getStationID import *
+from EmailSender import *
 
 g_Tk = Tk()
 g_Tk.geometry("700x800+750+200")
@@ -30,6 +31,14 @@ def MainInit():
     routelist_inv = {v: k for k, v in routelist.items()}
 
     g_Tk.bind("<Key>", key)
+
+def EmailSendBtn():
+    if bookmarklist:
+        data = bookmarklist
+        if SendEmail(data):
+            messagebox.showinfo("E-Mail", "Send Email Success")
+    else:
+        print("Empty Bookmark")
 
 def InitRadioBtn():
     global r_Route, r_Station, radiovar
@@ -145,6 +154,11 @@ def InitButton():
     AddBookMarkBtn.config(width = 10, height = 2)
     AddBookMarkBtn.place(x=540, y=35)
 
+    AddEmailingBtn = Button(g_Tk, font=TempFont, text="Send Email", command=EmailSendBtn)
+    AddEmailingBtn.pack()
+    AddEmailingBtn.config(width = 10, height = 2)
+    AddEmailingBtn.place(x=425, y=35)
+
 def RefreshBtnAction():
     if Tab.index(Tab.select()) == 1 :
         SearchButtonAction()
@@ -163,11 +177,12 @@ def BrowserBtnAction():
 def AddBookMarkBtnAction():
     tmp = InputLabel.get("1.0", END).replace('\n', '')
     try:
-        if(routelist[tmp]):pass
-        if tmp in bookmarklist:
+        if routelist[tmp] in bookmarklist:
+            messagebox.showerror("Duplicated!", "Duplicated Input!")
             return
         bookmarklist.append(tmp)
-        tag = "tag_bmk" + str(bookmarklist.__len__())
+        bookmarklist.append(routelist[tmp])
+        tag = "tag_bmk" + str(bookmarklist.__len__()-1)
         print(bookmarklist)
         BookmarkBox.configure(state = 'normal')
         BookmarkBox.tag_config(tag, foreground="blue")
@@ -177,6 +192,7 @@ def AddBookMarkBtnAction():
         BookmarkBox.configure(state = 'disabled')
 
     except:
+        messagebox.showerror("Invalid Input", "Invalid Input!")
         print('invalid')
     pass
 
@@ -218,8 +234,14 @@ def SearchButtonAction():
                 messagebox.showerror('Error','Invalid Route Name')
 
     elif radiobtnsel == 2:
+        Tab.select(frame1)
         datacounter = 0
         StList = getStationID(userInput)
+
+        if not StList:
+            messagebox.showerror("Error!", "No Elements!")
+            return
+
         RouteSearchBox.configure(state='normal')
         RouteSearchBox.delete('1.0', END)
         for data in StList:
