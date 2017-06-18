@@ -23,7 +23,6 @@ def SendEmail(data, type = 'bk'):
             info = getRouteInfo.getRouteInfo(dataset[1])
             for infoline in info:
                 text += str(infoline + " :: " + info[infoline]+ '<br>')
-                print(text)
 
             text += '<a href = "http://bus.go.kr/realBusLine6.jsp?strbusid={0}&wbustp=N">Map Link</a><br><br>'.format(dataset[1])
             html = """\
