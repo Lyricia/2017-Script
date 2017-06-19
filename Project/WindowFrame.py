@@ -26,6 +26,7 @@ def MainInit():
     InitSearchBox()
     InitRadioBtn()
     InitButton()
+    InitBmkBtns()
 
     routelist = loadRouteListfromFile()
     routelist_inv = {v: k for k, v in routelist.items()}
@@ -97,7 +98,7 @@ def InitRenderText():
 
     #Bookmark Frame box
     txtFrame4 = Frame(frame3, borderwidth=1, relief="sunken")
-    BookmarkBox = Text(txtFrame4, font=TempFont, wrap=NONE, height=28, width=27, borderwidth=0)
+    BookmarkBox = Listbox(txtFrame4, font=TempFont, height=28, width=27, borderwidth=0)
     vscroll4 = Scrollbar(txtFrame4, orient=VERTICAL, command=BookmarkBox.yview)
     BookmarkBox['yscroll'] = vscroll4.set
 
@@ -164,6 +165,18 @@ def RefreshBtnAction():
         SearchButtonAction()
     messagebox.showinfo("refresh", "Refresh")
 
+def InitBmkBtns():
+    TempFont = font.Font(frame3, size=12, family='Consolas')
+    EraseBmkBtn = Button(frame3, font=TempFont, text="Erase\nBookmark", command=EraseBmkBtnAction)
+    EraseBmkBtn.pack()
+    EraseBmkBtn.config(width=13, height=2)
+    EraseBmkBtn.place(x=300, y=35)
+
+    GotoInfoBtn = Button(frame3, font=TempFont, text="Go to\nInformation", command=GotoBmkInfoBtnAction)
+    GotoInfoBtn.pack()
+    GotoInfoBtn.config(width=13, height=2)
+    GotoInfoBtn.place(x=300, y=100)
+
 def BrowserBtnAction():
     tmp = InputLabel.get("1.0", END).replace('\n','')
     try:
@@ -174,6 +187,28 @@ def BrowserBtnAction():
     except:
         messagebox.showerror("Error", "Invalid Input")
 
+def GotoBmkInfoBtnAction():
+    global RouteBaseInfo, RouteStationData
+    if not bookmarklist:
+        messagebox.showerror("Select Item","Select Item")
+        return
+    index = int(BookmarkBox.curselection()[0])
+    routeid = routelist[BookmarkBox.get(index)]
+    Tab.select(frame2)
+    RouteBaseInfo = getRouteInfo(routeid)
+    RouteStationData = getStationInfoByRoute(routeid)
+    InitData(routeid)
+    RenderInfo()
+
+def EraseBmkBtnAction():
+    if not bookmarklist:
+        messagebox.showerror("Select Item","Select Item")
+        return
+    index = int(BookmarkBox.curselection()[0])
+    bookmarklist.remove(BookmarkBox.get(index))
+    bookmarklist.remove(routelist[BookmarkBox.get(index)])
+    BookmarkBox.delete(index)
+
 def AddBookMarkBtnAction():
     tmp = InputLabel.get("1.0", END).replace('\n', '')
     try:
@@ -182,14 +217,8 @@ def AddBookMarkBtnAction():
             return
         bookmarklist.append(tmp)
         bookmarklist.append(routelist[tmp])
-        tag = "tag_bmk" + str(bookmarklist.__len__()-1)
-        print(bookmarklist)
         BookmarkBox.configure(state = 'normal')
-        BookmarkBox.tag_config(tag, foreground="blue")
-        BookmarkBox.tag_bind(tag, '<Button-1>', lambda e: callback(e, tag, 'bmk'))
-        BookmarkBox.insert(END, tmp, tag)
-        BookmarkBox.insert(END, '\n')
-        BookmarkBox.configure(state = 'disabled')
+        BookmarkBox.insert(END, tmp)
 
     except:
         messagebox.showerror("Invalid Input", "Invalid Input!")
@@ -291,7 +320,7 @@ def callback(event, tag, cat):
             tmp += dataset['arrivetime1'] + '\n'
             tmp += dataset['arrivetime2'] + '\n' + '\n'
 
-        messagebox.showinfo('test', tmp)
+        messagebox.showinfo('{0}'.format(RouteStationData[idx].get('StationName')), tmp)
 
     elif cat == 'bmk':
         userInput = bookmarklist[idx]
