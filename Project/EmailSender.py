@@ -3,6 +3,8 @@ def SendEmail(data, type = 'bk'):
     import getRouteInfo
     from email.mime.text import MIMEText
     from email.mime.multipart import MIMEMultipart
+    import spam
+
 
     text = str()
     html = str()
@@ -14,6 +16,7 @@ def SendEmail(data, type = 'bk'):
     msg['Subject'] = 'Mail From Seoul Bus App'  # 이메일 제목
     msg['From'] = me
     msg['To'] = you
+    spam.strlen(data)
 
     if type == 'bk':
         for dataset in enumerate(data):

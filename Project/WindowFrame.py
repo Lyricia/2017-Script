@@ -189,25 +189,27 @@ def BrowserBtnAction():
 
 def GotoBmkInfoBtnAction():
     global RouteBaseInfo, RouteStationData
-    if not bookmarklist:
+    try:
+        index = int(BookmarkBox.curselection()[0])
+        routeid = routelist[BookmarkBox.get(index)]
+        Tab.select(frame2)
+        RouteBaseInfo = getRouteInfo(routeid)
+        RouteStationData = getStationInfoByRoute(routeid)
+        InitData(routeid)
+        RenderInfo()
+    except:
         messagebox.showerror("Select Item","Select Item")
         return
-    index = int(BookmarkBox.curselection()[0])
-    routeid = routelist[BookmarkBox.get(index)]
-    Tab.select(frame2)
-    RouteBaseInfo = getRouteInfo(routeid)
-    RouteStationData = getStationInfoByRoute(routeid)
-    InitData(routeid)
-    RenderInfo()
 
 def EraseBmkBtnAction():
-    if not bookmarklist:
+    try:
+        index = int(BookmarkBox.curselection()[0])
+        bookmarklist.remove(BookmarkBox.get(index))
+        bookmarklist.remove(routelist[BookmarkBox.get(index)])
+        BookmarkBox.delete(index)
+    except:
         messagebox.showerror("Select Item","Select Item")
         return
-    index = int(BookmarkBox.curselection()[0])
-    bookmarklist.remove(BookmarkBox.get(index))
-    bookmarklist.remove(routelist[BookmarkBox.get(index)])
-    BookmarkBox.delete(index)
 
 def AddBookMarkBtnAction():
     tmp = InputLabel.get("1.0", END).replace('\n', '')
