@@ -28,7 +28,10 @@ def MainInit():
     InitButton()
     InitBmkBtns()
 
-    routelist = loadRouteListfromFile()
+    try:
+        routelist = loadRouteListfromFile()
+    except:
+        routelist = loadRouteListfromAPI()
     routelist_inv = {v: k for k, v in routelist.items()}
 
     g_Tk.bind("<Key>", key)
