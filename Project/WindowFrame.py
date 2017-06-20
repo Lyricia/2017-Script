@@ -7,12 +7,13 @@ from tkinter import ttk
 
 from LoadRouteList import *
 from getRouteInfo import *
-from getStationbyRoute import *
 from getCurrentBusPosbyRoute import *
 from getStationInfo import *
 from getStationbyRoute import *
 from getStationID import *
 from EmailSender import *
+import loadmod
+import savemod
 
 g_Tk = Tk()
 g_Tk.geometry("700x800+750+200")
@@ -34,12 +35,25 @@ def MainInit():
         routelist = loadRouteListfromAPI()
     routelist_inv = {v: k for k, v in routelist.items()}
 
+
     g_Tk.bind("<Key>", key)
+
+def LoadBmkList():
+    global BookmarkBox, bookmarklist
+    BookmarkBox.delete(0, END)
+    bookmarklist = loadmod.fileload(list()).split()
+    for data in enumerate(bookmarklist):
+        if data[0] % 2==0 :
+            BookmarkBox.insert(END, data[1])
+
+def SaveBmkList():
+    global bookmarklist
+    if savemod.filesave(bookmarklist) == 0:
+        print("asd")
 
 def EmailSendBtn():
     if bookmarklist:
-        data = bookmarklist
-        if SendEmail(data):
+        if SendEmail(bookmarklist):
             messagebox.showinfo("E-Mail", "Send Email Success")
     else:
         print("Empty Bookmark")
@@ -54,10 +68,10 @@ def InitRadioBtn():
     r_Station.place(x=100, y= 130)
 
 def InitTopText():
-    TempFont = font.Font(g_Tk, size=15, weight='bold', family = 'Consolas')
+    TempFont = font.Font(g_Tk, size=40, weight='bold', family = 'Consolas')
     MainText = Label(g_Tk, font = TempFont, text="[Seoul Bus]")
     MainText.pack()
-    MainText.place(x=20)
+    MainText.place(x=20, y=10)
 
 def InitRenderText():
     global txtOutput, txtOutput2, RouteSearchBox, BookmarkBox
@@ -109,7 +123,8 @@ def InitRenderText():
     BookmarkBox.pack(side="left", fill="both", expand=True)
 
     txtFrame4.place(x=0, y=0)
-    BookmarkBox.configure(state="disabled")
+    BookmarkBox.configure(state='normal')
+
 
 def InitSearchBox():
     global InputLabel
@@ -178,7 +193,17 @@ def InitBmkBtns():
     GotoInfoBtn = Button(frame3, font=TempFont, text="Go to\nInformation", command=GotoBmkInfoBtnAction)
     GotoInfoBtn.pack()
     GotoInfoBtn.config(width=13, height=2)
-    GotoInfoBtn.place(x=300, y=100)
+    GotoInfoBtn.place(x=450, y=35)
+
+    SaveBmkListBtn = Button(frame3, font=TempFont, text="Save\nBookMark", command=SaveBmkList)
+    SaveBmkListBtn.pack()
+    SaveBmkListBtn.config(width=13, height=2)
+    SaveBmkListBtn.place(x=300, y=100)
+
+    LoadBmkListBtn = Button(frame3, font=TempFont, text="Load\nBookMark", command=LoadBmkList)
+    LoadBmkListBtn.pack()
+    LoadBmkListBtn.config(width=13, height=2)
+    LoadBmkListBtn.place(x=450, y=100)
 
 def BrowserBtnAction():
     tmp = InputLabel.get("1.0", END).replace('\n','')
@@ -222,7 +247,6 @@ def AddBookMarkBtnAction():
             return
         bookmarklist.append(tmp)
         bookmarklist.append(routelist[tmp])
-        BookmarkBox.configure(state = 'normal')
         BookmarkBox.insert(END, tmp)
 
     except:
@@ -424,6 +448,9 @@ def RenderInfo():
     txtOutput.configure(state="disabled")
     txtOutput2.configure(state="disabled")
 
-MainInit()
+def main():
+    MainInit()
 
-g_Tk.mainloop()
+    g_Tk.mainloop()
+
+main()
